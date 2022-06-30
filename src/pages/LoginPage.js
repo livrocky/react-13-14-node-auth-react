@@ -1,15 +1,17 @@
 import { useFormik } from 'formik';
+import { useHistory } from 'react-router-dom';
 import * as Yup from 'yup';
-import { myFetch } from '../utils';
+import { useAuthCtx } from '../store/authContext';
+import { baseUrl, myFetch } from '../utils';
+
 const initValues = {
   email: '',
   password: '',
 };
 
-const baseUrl = process.env.REACT_APP_BACKEND_URL;
-if (!baseUrl) throw new Error('baseUrl nerastas');
-
 function LoginPage() {
+  const history = useHistory();
+  const ctx = useAuthCtx();
   const formik = useFormik({
     initialValues: initValues,
     validationSchema: Yup.object({
@@ -19,16 +21,39 @@ function LoginPage() {
     onSubmit: async (values) => {
       console.log('values ===', values);
 
-      const fetchResulg = await myFetch(`${baseUrl}/login`, 'POST', values);
-      console.log('fetchResulg ===', fetchResulg);
+      const fetchResult = await myFetch(`${baseUrl}/login`, 'POST', values);
+      // ar gavom token
+      if (fetchResult.success) {
+        // turim token
+
+        ctx.login(fetchResult.token, values.email);
+        // redirect to /posts
+        history.replace('/posts');
+      }
+      console.log('fetchResulg ===', fetchResult);
     },
   });
+  // console.log('formik.errors ===', formik.errors);
+  function rightClassesForInput(field) {
+    let resultClasses = 'form-control';
 
+    // if (formik.touched[field] && formik.errors[field]) {
+    //   resultClasses += ' is-invalid';
+    // }
+    // if (formik.touched[field] && !formik.errors[field]) {
+    //   resultClasses += ' is-valid';
+    // }
+    if (formik.touched[field]) {
+      resultClasses += formik.errors[field] ? ' is-invalid' : ' is-valid';
+    }
+
+    return resultClasses;
+  }
   return (
     <div className='container'>
       <h1 className='display-4 py-4 text-center'>LoginPage</h1>
 
-      <form onSubmit={formik.handleSubmit} className='jumbotron w-50 mx-auto'>
+      <form onSubmit={formik.handleSubmit} className='jumbotron small-container mx-auto'>
         <div className='form-group'>
           <label htmlFor='email'>Email</label>
           <input
@@ -37,11 +62,7 @@ function LoginPage() {
             value={formik.values.email}
             type='email'
             // TODO: jei input yra touced ir nera klaidu tai prideam klase "is-valid"
-            className={
-              formik.touched.email && formik.errors.email
-                ? 'is-invalid form-control'
-                : 'form-control'
-            }
+            className={rightClassesForInput('email')}
             id='email'
             name='email'
           />
@@ -54,11 +75,7 @@ function LoginPage() {
             onBlur={formik.handleBlur}
             value={formik.values.password}
             type='password'
-            className={
-              formik.touched.password && formik.errors.password
-                ? 'is-invalid form-control'
-                : 'form-control'
-            }
+            className={rightClassesForInput('password')}
             id='password'
             name='password'
           />
