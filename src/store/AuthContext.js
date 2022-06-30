@@ -9,17 +9,17 @@ export const AuthContext = createContext({
 AuthContext.displayName = 'AuthContext';
 
 function AuthProvider(props) {
-  const [token, setToken] = useState(localStorage.getItem('token-prot'));
+  const [token, setToken] = useState(localStorage.getItem('token'));
   // infered value / calculated value
   const isUserLoggedIn = !!token;
   console.log('isUserLoggedIn ===', isUserLoggedIn);
   function login(userToken) {
     setToken(userToken);
-    localStorage.setItem('token-prot', userToken);
+    localStorage.setItem('token', userToken);
   }
   function logout() {
     setToken(null);
-    localStorage.removeItem('token-prot');
+    localStorage.removeItem('token');
   }
 
   const ctx = {

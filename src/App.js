@@ -8,9 +8,10 @@ import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
 import PostsPage from './pages/PostsPage';
 import RegisterPage from './pages/RegisterPage';
+import { useAuthCtx } from './store/AuthContext';
 
 function App() {
-  // console.log('process.env.REACT_APP_BACKEND_URL', process.env.REACT_APP_BACKEND_URL);
+  // const { isUserLoggedIn } = useAuthCtx();
   return (
     <div className='App'>
       <Header />
