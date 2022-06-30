@@ -22,8 +22,11 @@ function RegisterPage() {
         .required(),
     }),
     onSubmit: async (values) => {
+      const valueCopy = { ...values };
+      delete valueCopy['repeatPassword'];
       console.log('values ===', values);
-      const fetchResult = await myFetch(`${baseUrl}/register`, 'POST', values);
+      console.log('valueCopy===', valueCopy);
+      const fetchResult = await myFetch(`${baseUrl}/register`, 'POST', valueCopy);
       // ar gavom token
       if (fetchResult.success) {
         // turim token
