@@ -6,35 +6,34 @@ if (!baseUrl) throw new Error('base url nerastas');
 
 function PostsPage() {
   const [postsArray, setPostsArray] = useState([]);
+  const [token, setToken] = useState(localStorage.getItem('token'));
 
-  const getPostsAndSet = async (values) => {
-    const resp = await myFetch(`${baseUrl}/articles`, 'GET', values);
-    console.log('resp===', resp);
+  async function getPosts(values) {
+    const resp = await myFetch(`${baseUrl}/articles`, 'GET', values, token);
     setPostsArray(resp);
-  };
+    console.log('resp===', resp);
+  }
   useEffect(() => {
-    getPostsAndSet();
+    getPosts();
   }, []);
 
-  // async function getPosts() {
-  //   const resp = await fetch('http://localhost:3009/articles');
-  //   console.log('resp===', resp);
-  //   const dataInJs = await resp.json();
-  //   setPostsArray(dataInJs);
-  // }
+  // ****************************************************
 
   return (
     <div>
       <h1>Posts Page</h1>
-      <div className='card' style={{ width: 18 + 'rem' }}>
-        <div className='card-body'>
-          <h5 className='card-title'>Card title</h5>
-          <p className='card-content'>
-            Some quick example text to build on the card title and make up the bulk of the card's
-            content.
-          </p>
-          <p className='date'>2022-01-01</p>
-        </div>
+      <div className='container row justify-content-center'>
+        {postsArray.map((pObj) => (
+          <div key={pObj.id} className='card m-1' style={{ width: 18 + 'rem' }}>
+            <div className='card-body'>
+              <h5 className='card-title'>Card title</h5>
+              <h6 className='card-subtitle mb-2 text-muted'>
+                {new Date(pObj.date).toLocaleString('lt-LT').split(' ')[0]}
+              </h6>
+              <p className='card-text'>{pObj.content} </p>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
